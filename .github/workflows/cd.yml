@@ -20,7 +20,7 @@ jobs:
         key: ${{ secrets.PRIVATE_KEY }}
         port: 22
         script: |
-          cd ~/app/denstore
+          cd ~/app/DENSTORE
           git pull origin main
           git status
           npm install --only=prod
