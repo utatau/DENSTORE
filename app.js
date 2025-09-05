@@ -32,14 +32,14 @@ const startApp = async () => {
         });
         bot.initialize();
         process.on('SIGINT', async () => {
-            console.log('Shutting down...');
+            console.log('mematikan bot...');
             await bot.destroy();
             process.exit(0);
         });
-        bot.on('message', async (message) => {
-            console.log(message.from);
-            console.log('isi pesan: ', message.body);
-        })
+        // bot.on('message', async (message) => {
+        //     console.log(message.from);
+        //     console.log('isi pesan: ', message.body);
+        // })
 
     } catch (error) {
         console.error('Failed to start application:', error);

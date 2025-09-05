@@ -1,4 +1,4 @@
-const { handleListCommand, handleProductQuery, handleAddProduct, handleClose, handleOpen } = require('./commandHandler');
+const { handleListCommand, handleProductQuery, handleAddProduct, handleClose, handleOpen, handleDeleteProduct } = require('./commandHandler');
 
 const handleMessage = async (message, client) => {
     const messageBody = message.body.toLowerCase().trim();
@@ -7,7 +7,10 @@ const handleMessage = async (message, client) => {
     }
     else if (messageBody.startsWith('addproduk')) {
         await handleAddProduct(message, client);
-    } else if (messageBody.startsWith('buka')) {
+    } else if (messageBody.startsWith('hapus')) {
+        await handleDeleteProduct(message, client);
+    }
+    else if (messageBody.startsWith('buka')) {
         await handleOpen(message, client);
     } else if (messageBody.startsWith('tutup')) {
         await handleClose(message, client);

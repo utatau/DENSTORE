@@ -1,5 +1,9 @@
 const Produk = require('../models/Produk');
 
+const formatProduk = (key) => {
+    return key.toUpperCase();
+}
+
 const handleListCommand = async (message, client) => {
     try {
         const products = await Produk.findAll({
@@ -14,7 +18,7 @@ const handleListCommand = async (message, client) => {
 
         let reply = '📋 *DAFTAR PRODUK DENSTORE* 📋\n\n';
         products.forEach((product, index) => {
-            reply += `${index + 1}. ${product.key}\n`;
+            reply += `${index + 1}. ${formatProduk(product.key)}\n`;
         });
         reply += '\nKetik nama produk untuk melihat detailnya.';
         message.reply(reply);
@@ -78,6 +82,36 @@ const handleAddProduct = async (message, client) => {
     }
 };
 
+const handleDeleteProduct = async (message, client) => {
+    const isAdmin = await checkIfAdmin(message.from);
+    if (!isAdmin) {
+        return message.reply('Maaf, hanya admin yang dapat menghapus produk.');
+    }
+
+    const commandBody = message.body;
+    const key = commandBody.substring(6).trim().toLowerCase();
+
+    if (!key) {
+        return message.reply('key nya isi');
+    }
+
+    try {
+        const product = await Produk.findOne({
+            where: { key: key }
+        });
+        if (!product) {
+            return message.reply(`Produk dengan key "${key}" tidak ada`);
+        }
+        await Produk.destroy({
+            where: { key: key }
+        });
+        message.reply(`produk berhasil dihapus!\n\nKey: ${key}`);
+    } catch (error) {
+        console.error('error hapus produk:', error);
+        message.reply('Terjadi kesalahan saat menambahkan produk.');
+    }
+}
+
 const checkIfAdmin = async (sender) => {
     try {
         const userNumber = sender.split('@')[0];
@@ -102,7 +136,7 @@ const handleOpen = async (message, client) => {
         }
 
         await chat.setMessagesAdminsOnly(false);
-        message.reply(`Grup buka coi\n\nSelamat berbelanja di *DENSTORE*\n\nGrup di buka pada ${Date}`);
+        message.reply(`Grup buka coi\n\nSelamat berbelanja di *DENSTORE*\n\nGrup di buka pada pukul ${new Date().toLocaleTimeString('id-ID', { timeZone: 'Asia/Jakarta', hour: '2-digit', minute: '2-digit', hour12: false })}`);
     } catch (error) {
         console.error('error handleOpen:', error);
         message.reply('error pas buka grup');
@@ -122,7 +156,7 @@ const handleClose = async (message, client) => {
         }
 
         await chat.setMessagesAdminsOnly(true);
-        message.reply(`Grup tutup \n\nTerimakasih sudah berbelanja di *DENSTORE*\n\nGrup tutup pada ${Date}`);
+        message.reply(`Grup tutup \n\nTerimakasih sudah berbelanja di *DENSTORE*\n\nGrup tutup pada pukul ${new Date().toLocaleTimeString('id-ID', { timeZone: 'Asia/Jakarta', hour: '2-digit', minute: '2-digit', hour12: false })}`);
     } catch (error) {
         console.error('Error handleClose:', error);
         message.reply('Terjadi kesalahan saat menutup grup.');
@@ -171,5 +205,6 @@ module.exports = {
     handleOpen,
     handleClose,
     handlePending,
+    handleDeleteProduct,
     handleDone
 };
